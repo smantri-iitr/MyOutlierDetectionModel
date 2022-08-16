@@ -1,3 +1,9 @@
+# normalising the data since it is distance based algorithm
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(X)
+X = scaler.transform(X)
+
 from sklearn.neighbors import NearestNeighbors
 
 # this is actually 8 neighbors including itself -> so it is actually 7 nearest neighbors
@@ -23,4 +29,14 @@ for i in range(len(X)):
     fingerprint = y.values[i][0]
     outlier_df = outlier_df.append({'fingerprint':fingerprint,'mean':mean},ignore_index=True)
 outlier_df = outlier_df.sort_values(by='mean',ascending=False)
-top_N_outlier = list(outlier_df['fingerprint'].head(N))
+outlier_df = outlier_df.reset_index(drop=True)
+outlier_df['index'] = outlier_df.index
+
+
+# use graph to find optimum value for top n outliers
+import seaborn as sns
+sns.relplot(data = outlier_df.iloc[:1000,:], x='index', y='mean', kind='line')
+
+
+# top n outlier 
+top_n_outlier = list(outlier_df['fingerprint'].head(n))
